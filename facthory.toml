@@ -1,0 +1,159 @@
+[solution]
+id = "com.facthory.oncology_real_world_data_extractor"
+title = "Oncology Real-World Data Extractor"
+version = "0.1.0"
+contract = "0-draft"
+licence = "Apache-2.0"
+health_related = true
+
+# Sample tables. All synthetic, generated for this repository (CC0-1.0); see data/README.md.
+[[dataset]]
+name = "notes"
+path = "data/sample/notes.parquet"
+synthetic = true
+licence = "CC0-1.0"
+
+[[dataset]]
+name = "icd10_hcc"
+path = "data/sample/icd10_hcc.parquet"
+synthetic = true
+licence = "CC0-1.0"
+
+[[dataset]]
+name = "billable_codes"
+path = "data/sample/billable_codes.parquet"
+synthetic = true
+licence = "CC0-1.0"
+
+[[dataset]]
+name = "rxnorm_drugs"
+path = "data/sample/rxnorm_drugs.parquet"
+synthetic = true
+licence = "CC0-1.0"
+
+[[dataset]]
+name = "cpt_codes"
+path = "data/sample/cpt_codes.parquet"
+synthetic = true
+licence = "CC0-1.0"
+
+[[dataset]]
+name = "assertions"
+path = "data/sample/assertions.parquet"
+synthetic = true
+licence = "CC0-1.0"
+
+[[dataset]]
+name = "temporal_relations"
+path = "data/sample/temporal_relations.parquet"
+synthetic = true
+licence = "CC0-1.0"
+
+[[dataset]]
+name = "bodypart_relations"
+path = "data/sample/bodypart_relations.parquet"
+synthetic = true
+licence = "CC0-1.0"
+
+# The six extraction jobs take a TextModel as a third argument; Facthory provides
+# model access. The repository ships a recorded stand-in (text/recorded.py).
+[[job]]
+name = "extract_oncology_entities"
+entry = "oncology_real_world_data_extractor.jobs.extract_oncology_entities:run"
+mode = "job"
+inputs = ["notes"]
+outputs = ["icd10_hcc", "billable_codes", "rejected_icd10"]
+
+[[job]]
+name = "extract_drugs"
+entry = "oncology_real_world_data_extractor.jobs.extract_drugs:run"
+mode = "job"
+inputs = ["notes"]
+outputs = ["rxnorm_drugs", "rejected_drugs"]
+
+[[job]]
+name = "extract_cpt"
+entry = "oncology_real_world_data_extractor.jobs.extract_cpt:run"
+mode = "job"
+inputs = ["notes"]
+outputs = ["cpt_codes", "rejected_cpt"]
+
+[[job]]
+name = "extract_assertions"
+entry = "oncology_real_world_data_extractor.jobs.extract_assertions:run"
+mode = "job"
+inputs = ["notes"]
+outputs = ["assertions", "rejected_assertions"]
+
+[[job]]
+name = "extract_temporal_relations"
+entry = "oncology_real_world_data_extractor.jobs.extract_temporal_relations:run"
+mode = "job"
+inputs = ["notes"]
+outputs = ["temporal_relations", "rejected_temporal"]
+
+[[job]]
+name = "extract_bodypart_relations"
+entry = "oncology_real_world_data_extractor.jobs.extract_bodypart_relations:run"
+mode = "job"
+inputs = ["notes"]
+outputs = ["bodypart_relations", "rejected_bodypart"]
+
+[[job]]
+name = "common_entities"
+entry = "oncology_real_world_data_extractor.jobs.common_entities:run"
+mode = "call"
+inputs = ["icd10_hcc"]
+outputs = ["common_entities"]
+
+[[job]]
+name = "category_risk"
+entry = "oncology_real_world_data_extractor.jobs.category_risk:run"
+mode = "call"
+inputs = ["billable_codes"]
+outputs = ["category_risk"]
+
+[[job]]
+name = "condition_symptom_pairs"
+entry = "oncology_real_world_data_extractor.jobs.condition_symptom_pairs:run"
+mode = "call"
+inputs = ["icd10_hcc"]
+outputs = ["condition_symptom_pairs"]
+
+[[job]]
+name = "drug_usage"
+entry = "oncology_real_world_data_extractor.jobs.drug_usage:run"
+mode = "call"
+inputs = ["rxnorm_drugs"]
+outputs = ["drug_usage"]
+
+[[job]]
+name = "problems_after_treatment"
+entry = "oncology_real_world_data_extractor.jobs.problems_after_treatment:run"
+mode = "call"
+inputs = ["temporal_relations"]
+outputs = ["problems_after_treatment"]
+
+[[job]]
+name = "bodypart_procedures"
+entry = "oncology_real_world_data_extractor.jobs.bodypart_procedures:run"
+mode = "call"
+inputs = ["bodypart_relations"]
+outputs = ["bodypart_procedures"]
+
+[[job]]
+name = "common_procedures"
+entry = "oncology_real_world_data_extractor.jobs.common_procedures:run"
+mode = "call"
+inputs = ["cpt_codes"]
+outputs = ["common_procedures"]
+
+[[job]]
+name = "assertion_summary"
+entry = "oncology_real_world_data_extractor.jobs.assertion_summary:run"
+mode = "call"
+inputs = ["assertions"]
+outputs = ["assertion_breakdown", "symptom_assertions"]
+
+[skill]
+instructions = "skills/oncology_real_world_data_extractor.md"

@@ -30,3 +30,43 @@ This is software for research and analytics. It is not a medical device and must
 ## Licence
 
 Apache-2.0. See [LICENSE](LICENSE). "Facthory" and the Facthory logo are trademarks of their owner and are not covered by that licence.
+
+## Jobs
+
+| Job | What it does | Inputs | Outputs |
+| --- | --- | --- | --- |
+| `extract_oncology_entities` | Extracts cancer, symptom and treatment findings and codes each to ICD-10-CM with billable status and HCC score | `notes` | `icd10_hcc`, `billable_codes`, `rejected_icd10` |
+| `extract_drugs` | Extracts drug mentions and resolves them to RxNorm | `notes` | `rxnorm_drugs`, `rejected_drugs` |
+| `extract_cpt` | Extracts procedure mentions and codes them to CPT | `notes` | `cpt_codes`, `rejected_cpt` |
+| `extract_assertions` | Judges whether each cancer and symptom mention is Present, Absent, Possible, Hypothetical, Conditional or Someone_else | `notes` | `assertions`, `rejected_assertions` |
+| `extract_temporal_relations` | Extracts which clinical event happened before, after or with another | `notes` | `temporal_relations`, `rejected_temporal` |
+| `extract_bodypart_relations` | Extracts which organ a procedure was done on or a problem involves | `notes` | `bodypart_relations`, `rejected_bodypart` |
+| `common_entities` | The most common cancer findings or symptoms, by notes they appear in | `icd10_hcc` | `common_entities` |
+| `category_risk` | Notes and average HCC score per ICD-10 oncology category | `billable_codes` | `category_risk` |
+| `condition_symptom_pairs` | Cancer and symptom pairs in the same note, normalised per symptom | `icd10_hcc` | `condition_symptom_pairs` |
+| `drug_usage` | The drugs named most often, above a confidence floor | `rxnorm_drugs` | `drug_usage` |
+| `problems_after_treatment` | Treatment and problem pairs where the problem followed the treatment | `temporal_relations` | `problems_after_treatment` |
+| `bodypart_procedures` | Which procedures were performed on which internal body part | `bodypart_relations` | `bodypart_procedures` |
+| `common_procedures` | The procedures coded most often | `cpt_codes` | `common_procedures` |
+| `assertion_summary` | How assertion statuses distribute and how symptoms are asserted | `assertions` | `assertion_breakdown`, `symptom_assertions` |
+
+The six extraction jobs take a `TextModel` (see `src/oncology_real_world_data_extractor/text/interface.py`) as a third argument; Facthory provides model access, and every model answer is validated before it becomes a row. Named measures for billing and family history live in `metrics/`.
+
+## Data
+
+The sample tables in `data/sample/` are synthetic and openly licensed (CC0-1.0): `notes`, `icd10_hcc`, `billable_codes`, `rxnorm_drugs`, `cpt_codes`, `assertions`, `temporal_relations` and `bodypart_relations`. See [data/README.md](data/README.md) for one row per file with origin and licence. No real patient data.
+
+## Run it locally
+
+```
+uv sync
+uv run python -m oncology_real_world_data_extractor common_entities --entity-type Oncological
+uv run python -m oncology_real_world_data_extractor category_risk
+uv run python -m oncology_real_world_data_extractor problems_after_treatment --min-confidence 0.8
+uv run pytest
+```
+
+`uv run python -m oncology_real_world_data_extractor --help` lists every job; each job has its own `--help`. The six extraction jobs additionally take `--model-answers <file>` with a recorded-answers JSON (see `tests/recorded_answers.json`), since they read notes through a model behind `text.interface`; the analysis jobs run without any model.
+
+Codes are coding suggestions for analytics: `icd10_hcc` keeps the model's best code with its billable flag and HCC score, `billable_codes` keeps the nearest billable code with its ICD-10 oncology category, and `condition_symptom_pairs` expresses each pair's note count as a share of the most frequent condition for its symptom.
+
