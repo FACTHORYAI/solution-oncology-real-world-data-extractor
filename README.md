@@ -23,13 +23,19 @@ Turn oncology notes into structured real-world data: diagnoses, staging, treatme
 - Its results are tables and pages in your workspace, so you can query them, chart them and ask the agent about them, inside your permissions.
 - Sample data in this repository is synthetic or openly licensed. No real patient data.
 
+## What the result could look like
+
+![Mock-up of a Facthory report page titled "Insights from oncology reports", marked "Sample data": four figures (reports processed, entities extracted, share mapped to ICD-10, procedure mentions), a table of ICD-10 coded entities with note id, text chunk, entity type, code and description, the share of entities by type, the top ten ICD-10 categories and top ten procedures as bar charts, the assertion statuses, and the average risk score per cancer category.](docs/images/oncology-report-mockup.png)
+
+A design illustration of a report built from this solution's tables: coded entities, procedures, assertion statuses and the average risk score per category. It is a mock-up. Its figures are illustrative: they are not produced by this repository's sample data, and it is not a screenshot of a released feature.
+
 ## Not for clinical use
 
 This is software for research and analytics. It is not a medical device and must not be used to diagnose or treat a patient. Results can be wrong; a qualified person reviews them.
 
 ## Licence
 
-Apache-2.0. See [LICENSE](LICENSE). "Facthory" and the Facthory logo are trademarks of their owner and are not covered by that licence.
+Apache-2.0. See [LICENSE](LICENSE). "Facthory" and the Facthory logo are trademarks of their owner and are not covered by that licence. This includes the logo shown in the image under `docs/images/`.
 
 ## Jobs
 
