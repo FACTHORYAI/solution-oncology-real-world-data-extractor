@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 
 ENTITY_TYPES = ("Oncological", "Symptom", "Treatment")
 ASSERTION_ENTITY_TYPES = ("Oncological", "Symptom")
@@ -17,6 +18,9 @@ ASSERTION_STATUSES = (
 TEMPORAL_RELATIONS = ("BEFORE", "AFTER", "OVERLAP")
 TEMPORAL_ENTITY_TYPES = ("Treatment", "Problem", "Symptom", "Test")
 BODYPART_ENTITY_TYPES = ("Internal_organ_or_component", "Problem", "Procedure")
+PROCEDURE_CODE_SYSTEMS = ("ICD-10-PCS",)
+# An ICD-10-PCS code has seven characters, digits and letters, without the letters I and O.
+ICD10_PCS_SHAPE = re.compile(r"[0-9A-HJ-NP-Z]{7}")
 
 
 def parse_items(answer: str) -> list[dict]:
@@ -90,10 +94,14 @@ def validate_drug_item(item: dict) -> str:
 
 def validate_procedure_item(item: dict) -> str:
     """Return the reason the procedure mention is rejected, or "" when it is valid."""
-    for key in ("chunk", "cpt_code", "procedure_name"):
+    for key in ("chunk", "procedure_code", "procedure_name"):
         reason = _check_text(item, key)
         if reason:
             return reason
+    if item.get("code_system") not in PROCEDURE_CODE_SYSTEMS:
+        return f"code_system is not one of {PROCEDURE_CODE_SYSTEMS}"
+    if not ICD10_PCS_SHAPE.fullmatch(item["procedure_code"].strip()):
+        return "procedure_code is not seven ICD-10-PCS characters"
     return _check_confidence(item)
 
 

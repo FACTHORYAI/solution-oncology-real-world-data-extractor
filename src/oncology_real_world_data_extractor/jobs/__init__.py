@@ -11,6 +11,7 @@ import pyarrow as pa
 from oncology_real_world_data_extractor.jobs import (
     assertion_summary,
     bodypart_procedures,
+    build_knowledge_graph,
     category_risk,
     common_entities,
     common_procedures,
@@ -18,9 +19,9 @@ from oncology_real_world_data_extractor.jobs import (
     drug_usage,
     extract_assertions,
     extract_bodypart_relations,
-    extract_cpt,
     extract_drugs,
     extract_oncology_entities,
+    extract_procedure_codes,
     extract_temporal_relations,
     problems_after_treatment,
 )
@@ -61,12 +62,12 @@ REGISTRY: dict[str, JobSpec] = {
             needs_model=True,
         ),
         JobSpec(
-            name="extract_cpt",
-            description="Extract procedure mentions and code them to CPT.",
-            run=extract_cpt.run,
-            params_cls=extract_cpt.Params,
-            inputs=extract_cpt.INPUTS,
-            outputs=extract_cpt.OUTPUTS,
+            name="extract_procedure_codes",
+            description="Extract procedure mentions and code them to ICD-10-PCS.",
+            run=extract_procedure_codes.run,
+            params_cls=extract_procedure_codes.Params,
+            inputs=extract_procedure_codes.INPUTS,
+            outputs=extract_procedure_codes.OUTPUTS,
             needs_model=True,
         ),
         JobSpec(
@@ -95,6 +96,14 @@ REGISTRY: dict[str, JobSpec] = {
             inputs=extract_bodypart_relations.INPUTS,
             outputs=extract_bodypart_relations.OUTPUTS,
             needs_model=True,
+        ),
+        JobSpec(
+            name="build_knowledge_graph",
+            description="Build the oncology knowledge graph as node and edge tables.",
+            run=build_knowledge_graph.run,
+            params_cls=build_knowledge_graph.Params,
+            inputs=build_knowledge_graph.INPUTS,
+            outputs=build_knowledge_graph.OUTPUTS,
         ),
         JobSpec(
             name="common_entities",
