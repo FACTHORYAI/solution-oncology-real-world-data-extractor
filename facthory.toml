@@ -55,6 +55,18 @@ path = "data/sample/bodypart_relations.parquet"
 synthetic = true
 licence = "CC0-1.0"
 
+[[dataset]]
+name = "graph_nodes"
+path = "data/sample/graph_nodes.parquet"
+synthetic = true
+licence = "CC0-1.0"
+
+[[dataset]]
+name = "graph_edges"
+path = "data/sample/graph_edges.parquet"
+synthetic = true
+licence = "CC0-1.0"
+
 # The six extraction jobs take a TextModel as a third argument; Facthory provides
 # model access. The repository ships a recorded stand-in (text/recorded.py).
 [[job]]
@@ -98,6 +110,21 @@ entry = "oncology_real_world_data_extractor.jobs.extract_bodypart_relations:run"
 mode = "job"
 inputs = ["notes"]
 outputs = ["bodypart_relations", "rejected_bodypart"]
+
+[[job]]
+name = "build_knowledge_graph"
+entry = "oncology_real_world_data_extractor.jobs.build_knowledge_graph:run"
+mode = "call"
+inputs = [
+    "notes",
+    "icd10_hcc",
+    "rxnorm_drugs",
+    "procedure_codes",
+    "assertions",
+    "temporal_relations",
+    "bodypart_relations",
+]
+outputs = ["graph_nodes", "graph_edges"]
 
 [[job]]
 name = "common_entities"

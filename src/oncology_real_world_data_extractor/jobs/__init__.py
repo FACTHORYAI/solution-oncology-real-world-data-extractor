@@ -11,6 +11,7 @@ import pyarrow as pa
 from oncology_real_world_data_extractor.jobs import (
     assertion_summary,
     bodypart_procedures,
+    build_knowledge_graph,
     category_risk,
     common_entities,
     common_procedures,
@@ -95,6 +96,14 @@ REGISTRY: dict[str, JobSpec] = {
             inputs=extract_bodypart_relations.INPUTS,
             outputs=extract_bodypart_relations.OUTPUTS,
             needs_model=True,
+        ),
+        JobSpec(
+            name="build_knowledge_graph",
+            description="Build the oncology knowledge graph as node and edge tables.",
+            run=build_knowledge_graph.run,
+            params_cls=build_knowledge_graph.Params,
+            inputs=build_knowledge_graph.INPUTS,
+            outputs=build_knowledge_graph.OUTPUTS,
         ),
         JobSpec(
             name="common_entities",
