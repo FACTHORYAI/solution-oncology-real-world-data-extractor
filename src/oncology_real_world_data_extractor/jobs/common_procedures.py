@@ -10,7 +10,7 @@ from oncology_real_world_data_extractor import io
 from oncology_real_world_data_extractor.jobs._duck import align, run_query
 from oncology_real_world_data_extractor.schemas import COMMON_PROCEDURES
 
-INPUTS = ("cpt_codes",)
+INPUTS = ("procedure_codes",)
 OUTPUTS = ("common_procedures",)
 
 

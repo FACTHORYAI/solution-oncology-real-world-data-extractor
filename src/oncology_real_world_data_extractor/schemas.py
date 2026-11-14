@@ -44,12 +44,13 @@ RXNORM_DRUGS = pa.schema(
     ]
 )
 
-CPT_CODES = pa.schema(
+PROCEDURE_CODES = pa.schema(
     [
         pa.field("note_id", pa.string()),
         pa.field("chunk", pa.string()),
-        pa.field("cpt_code", pa.string()),
+        pa.field("procedure_code", pa.string()),
         pa.field("procedure_name", pa.string()),
+        pa.field("code_system", pa.string()),
         pa.field("confidence", pa.float64()),
     ]
 )
